@@ -6,7 +6,7 @@ using System;
 
 namespace OdeToFood.Controllers
 {
-    public class HomeController:Controller
+    public class HomeController : Controller
     {
         private IRestaurantData _restaurantData;
 
@@ -14,7 +14,7 @@ namespace OdeToFood.Controllers
         {
             _restaurantData = restaurantData;
         }
-       
+
         public IActionResult Index()
         {
             var model = new HomeIndexViewModel();
@@ -24,7 +24,8 @@ namespace OdeToFood.Controllers
             return View(model);
         }
 
-        public IActionResult Details(int id) {
+        public IActionResult Details(int id)
+        {
 
             var restaurant = _restaurantData.Get(id);
 
@@ -46,13 +47,22 @@ namespace OdeToFood.Controllers
         [HttpPost]
         public IActionResult Create(RestaurantEditModel model)
         {
-            var newRestaurant = new Restaurant();
-            newRestaurant.Name = model.Name;
-            newRestaurant.Cuisine = model.Cuisine;
 
-            newRestaurant = _restaurantData.Add(newRestaurant);
+            if (ModelState.IsValid){
+                var newRestaurant = new Restaurant();
+                newRestaurant.Name = model.Name;
+                newRestaurant.Cuisine = model.Cuisine;
 
-            return View("Details", newRestaurant);
+                newRestaurant = _restaurantData.Add(newRestaurant);
+
+                return RedirectToAction(nameof(Details), new { id = newRestaurant.Id });
+            }
+            else
+            {
+                return View();   
+            }
+
+          
         }
     }
 }
